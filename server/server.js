@@ -5,7 +5,7 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db/pool.js";
 import passport from "./configs/passportConfig.js"
-import { appRouter } from "./routes/appRouter.js";
+import { authRouter } from "./routes/authRouter.js";
 
 dotenv.config();
 const port = process.env.PORT;
@@ -38,7 +38,7 @@ app.use(passport.session());
 
 app.use(express.json());
 
-app.use("/", appRouter);
+app.use("/", authRouter);
 
 app.use((req, res)=>{
     res.status(404).send(
