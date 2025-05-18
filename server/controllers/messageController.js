@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler"
-import { addAMessage, deleteMessage, getAllMessages as getAllMessagesQuery, getMessagesByUser, updateMessage } from "../db/queries"
+import { addAMessage, deleteMessage, getAllMessages as getAllMessagesQuery, getMessagesByUser, updateMessage } from "../db/queries.js"
 import { body } from "express-validator"
 import { validateRequest } from "../configs/validateRequest.js"
 

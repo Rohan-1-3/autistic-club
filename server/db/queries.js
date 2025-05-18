@@ -1,11 +1,7 @@
-import pool from "./pool.js"
+import { pool } from "./pool.js"
 import { v4 as uuid} from "uuid"
 
 const addAUser = async (user)=>{
-    const existing = await pool.query('SELECT id FROM auth_users WHERE username = $1', [user.username]);
-    if (existing.rows.length > 0) {
-        return res.status(409).json({ message: "Username already taken" });
-    }
     const userId = uuid()
     const { firstname, lastname, username, password, isMember, isAdmin } = user;
     try{

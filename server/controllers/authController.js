@@ -1,9 +1,9 @@
 import { hash } from "bcryptjs";
 import { body, validationResult } from "express-validator"
-import { addAUser, deleteUser, updateUser as updateUserQuery } from "../db/queries";
+import { addAUser, deleteUser, updateUser as updateUserQuery } from "../db/queries.js";
 import passport from "passport";
 import expressAsyncHandler from "express-async-handler";
-import { validateRequest } from "../configs/validateRequest";
+import { validateRequest } from "../configs/validateRequest.js";
 
 const validateUserName = [
     body('firstname').trim().notEmpty().withMessage("First name cannot be empty.").bail()
@@ -41,7 +41,7 @@ const registerUser = [
 
 const loginUser = [
     validateUserCredentials, validateRequest,
-    asyncHandler(async (req, res, next) => {
+    expressAsyncHandler(async (req, res, next) => {
         passport.authenticate('local', (err, user, info) => {
             if (err) return next(err);
             if (!user) return res.status(401).json({ message: info.message });
