@@ -6,6 +6,7 @@ import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db/pool.js";
 import passport from "./configs/passportConfig.js"
 import { authRouter } from "./routes/authRouter.js";
+import { messageRouter } from "./routes/messageRouter.js";
 
 dotenv.config();
 const port = process.env.PORT;
@@ -39,25 +40,11 @@ app.use(passport.session());
 app.use(express.json());
 
 app.use("/", authRouter);
+app.use("/message", messageRouter)
 
-app.use((req, res)=>{
-    res.status(404).send(
-        `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>React App</title>
-            </head>
-            <body>
-            <div id="root">There is no such page. Return back.</div>
-            <a href="/">Home Page</a>
-            </body>
-            </html>
-        `
-    )
-})
+app.use((err, req, res, next) => {
+  res.status(500).json({ message: err.message });
+});
 
 app.listen(port, ()=>{
     console.log(`Server listening on port: ${port}`);

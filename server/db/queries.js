@@ -57,6 +57,7 @@ const addAMessage = async(userId, messageDetails)=>{
     try{
         await pool.query(`INSERT INTO messages (userId, id, message, date, isEdited)
                           VALUES ($1, $2, $3, $4, $5)`,[userId, messageId, message, date, false])
+        return messageId
     }catch(err){
         console.log(err);
     }
@@ -65,7 +66,7 @@ const addAMessage = async(userId, messageDetails)=>{
 const getAMessage = async(messageId)=>{
     try{
         const { rows } = await pool.query("SELECT * FROM messages WHERE id = $1",[messageId]);
-        return rows[0];
+        return rows;
     }catch(err){
         console.log(err)
     }
@@ -77,7 +78,7 @@ const getAllMessages = async()=>{
             SELECT username, date, message, isEdited FROM messages m
             JOIN auth_users au ON au.id = m.userId
             `)
-        return rows[0];
+        return rows;
     }catch(err){
         console.log(err);
     }
@@ -92,13 +93,14 @@ const getMessagesByUser = async(userId)=>{
     }
 }
 
-const updateMessage = async(updatedMessageDetail)=>{
+const updateMessage = async(messageId, updatedMessageDetail)=>{
     const { message, date, isEdited } = updatedMessageDetail;
     try{
         await pool.query(`
-            INSERT INTO messages 
+            UPDATE messages 
             SET message = $1, date = $2, isEdited = $3
-            `,[message, date, isEdited])
+            WHERE id = $4
+            `,[message, date, isEdited, messageId])
     }catch(err){
         console.log(err)
     }

@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator"
 import { addAUser, deleteUser, updateUser as updateUserQuery } from "../db/queries";
 import passport from "passport";
 import expressAsyncHandler from "express-async-handler";
+import { validateRequest } from "../configs/validateRequest";
 
 const validateUserName = [
     body('firstname').trim().notEmpty().withMessage("First name cannot be empty.").bail()
@@ -23,13 +24,9 @@ const validateUserCredentials = [
 ]
 
 const registerUser = [
-    validateUserName, validateUserCredentials,
+    validateUserName, validateUserCredentials, validateRequest,
     expressAsyncHandler(
         async (req, res)=>{
-            const errors = validationResult(req);
-            if(!errors.isEmpty()){
-                return res.status(401).json({err: errors.array()});
-            }
             const hashedPass = await hash(req.body.password, 10);
             const user = {...req.body, 
                             password: hashedPass,
@@ -43,13 +40,8 @@ const registerUser = [
 ]
 
 const loginUser = [
-    validateUserCredentials,
+    validateUserCredentials, validateRequest,
     asyncHandler(async (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(401).json({ errors: errors.array() });
-        }
-
         passport.authenticate('local', (err, user, info) => {
             if (err) return next(err);
             if (!user) return res.status(401).json({ message: info.message });
@@ -80,7 +72,7 @@ const logoutUser = (req, res) => {
 };
 
 const updateUser = [
-    validateUserName, validateUserCredentials,
+    validateUserName, validateUserCredentials, validateRequest,
     expressAsyncHandler(async (req, res)=>{
         const user = req.body.user;
         await updateUserQuery(user);
