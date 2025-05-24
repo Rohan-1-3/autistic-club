@@ -9,19 +9,30 @@ const addAUser = async (user)=>{
             INSERT INTO auth_users ( id, firstname, lastname, username, password, isMember, isAdmin)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             `, [userId, firstname, lastname, username, password, isMember, isAdmin]);
-        return userId;
+        return {
+            success: true,
+            data: userId
+        };
     }catch(err){
-        console.log(err);
-        return err;
+        return {
+            success: false,
+            error: err
+        };
     }
 }
 
 const getUser = async(userId)=>{
     try{
         const { rows } = await pool.query(`SELECT * FROM auth_users WHERE id = $1`,[userId])
-        return rows[0];
+        return {
+            success: true,
+            data: rows[0]
+        };
     }catch(err){
-        console.log(err)
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
@@ -34,16 +45,26 @@ const updateUser = async(updatedUser)=>{
                 password = $3, isMember = $5, isAdmin = $6
             WHERE id = $7
             `,[firstname, lastname, username, password, isMember, isAdmin, userId])
+            return {
+                success: true
+            }
     }catch(err){
-        console.log(err)
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
 const deleteUser = async(userId)=>{
     try{
         await pool.query(`DELETE FROM auth_users WHERE id = $1`, [userId]);
+        return { success: true }
     }catch(err){
-        console.log(err)
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
@@ -53,18 +74,30 @@ const addAMessage = async(userId, messageDetails)=>{
     try{
         await pool.query(`INSERT INTO messages (userId, id, message, date, isEdited)
                           VALUES ($1, $2, $3, $4, $5)`,[userId, messageId, message, date, false])
-        return messageId
+        return { 
+            success: true,
+            data: messageId
+         }
     }catch(err){
-        console.log(err);
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
 const getAMessage = async(messageId)=>{
     try{
         const { rows } = await pool.query("SELECT * FROM messages WHERE id = $1",[messageId]);
-        return rows;
+        return {
+            success: true,
+            data: rows[0]
+        };
     }catch(err){
-        console.log(err)
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
@@ -74,18 +107,30 @@ const getAllMessages = async()=>{
             SELECT username, date, message, isEdited FROM messages m
             JOIN auth_users au ON au.id = m.userId
             `)
-        return rows;
+        return {
+            success: true,
+            data: rows
+        };
     }catch(err){
-        console.log(err);
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
 const getMessagesByUser = async(userId)=>{
     try{
         const { rows } = await pool.query(`SELECT * FROM messages WHERE userId = $1`,[userId])
-        return rows[0];
+        return {
+            success: true,
+            data: rows[0]
+        };
     }catch(err){
-        console.log(err)
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
@@ -97,16 +142,24 @@ const updateMessage = async(messageId, updatedMessageDetail)=>{
             SET message = $1, date = $2, isEdited = $3
             WHERE id = $4
             `,[message, date, isEdited, messageId])
+        return { success: true }
     }catch(err){
-        console.log(err)
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 
 const deleteMessage = async(messageId)=>{
     try{
         await pool.query("DELETE FROM messages WHERE id = $1",[messageId])
+        return { success: true }
     }catch(err){
-        console.log(err);
+        return {
+            success: false,
+            error: err
+        }
     }
 }
 

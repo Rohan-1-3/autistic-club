@@ -5,6 +5,7 @@ import UserpageLayout from "./src/components/Userpage/UserpageLayout";
 import Login from "./src/components/Userpage/Login";
 import Signup from "./src/components/Userpage/Signup";
 import { Component } from "react";
+import NotFound from "./src/components/NotFound";
 
 export const routes = createBrowserRouter([
     {
@@ -22,13 +23,20 @@ export const routes = createBrowserRouter([
                 path: "login",
                 Component: Login,
                 action: async ({request})=>{
-                    console.log("Login action", request);
                     const formData = await request.formData();
-                    const userId = await fetch("/api/login",{
+                    const payload = Object.fromEntries(formData.entries());
+                    const response = await fetch("/api/login",{
                         method: "POST",
-                        body: formData
+                        headers:{
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
                     })
-                    if(userId) return redirect("/chat")
+                    if(response.status === 200){
+                        return redirect("/chatroom")
+                    }
+                    const errors = await response.json()
+                    return { errors: errors}
                 }
             },
             {
@@ -39,7 +47,11 @@ export const routes = createBrowserRouter([
                     const pass = formData.get("password");
                     const confirmPass = formData.get("confirmPassword")
                     if(pass !== confirmPass){
-                        return { error: "Confirmation password is not same."}
+                        return { errors: [
+                            {
+                                msg: "Confirmation password is not same."
+                            }
+                        ]}
                     }
                     const payload = Object.fromEntries(formData.entries());
                     const response = await fetch("/api/register",{
@@ -50,19 +62,23 @@ export const routes = createBrowserRouter([
                         body: JSON.stringify(payload)
                     })
                     if(response.status === 201){
-                        return redirect("/login")
+                        return redirect("/user/login")
                     }
                     const error = await response.json()
                     console.log(error)
-                    return { error}
+                    return { errors: error.err}
                 }
             },
             // {
             //     element: ,
             //     children: {
-            //         path: "chat", Component
+            //         path: "chatroom", Component
             //     }
             // }
         ]
+    },
+    {
+        path: "*",
+        Component: NotFound
     }
 ])

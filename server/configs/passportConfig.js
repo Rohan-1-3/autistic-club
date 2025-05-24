@@ -8,14 +8,14 @@ passport.use(
         try{
             const { rows } = await pool.query("SELECT * FROM auth_users WHERE username = $1",[username])
             const user = rows[0];
-
+            
             if(!user){
-                return done(null, false, {message: "Incorrect Username"});
+                return done(null, false, {msg: "Incorrect Username"});
             }
 
             const match = await compare(password, user.password)
             if(!match){
-                return done(null, false, { message: "Incorrect Password"});
+                return done(null, false, { msg: "Incorrect Password"});
             }
 
             return done(null, user);

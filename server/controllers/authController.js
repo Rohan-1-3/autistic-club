@@ -34,8 +34,8 @@ const registerUser = [
                             isAdmin: false    
                         };
             const response = await addAUser(user);
-            if(response.detail){
-                return res.status(400).json({err: response})
+            if(!response.success){
+                return res.status(400).json({err: response.error})
             }
             res.status(201).json({id: response})
         }
@@ -47,8 +47,8 @@ const loginUser = [
     expressAsyncHandler(async (req, res, next) => {
         passport.authenticate('local', (err, user, info) => {
             if (err) return next(err);
-            if (!user) return res.status(401).json({ message: info.message });
-
+            if (!user) return res.status(401).json([ info ]);
+            
             req.logIn(user, (err) => {
                 if (err) return next(err);
                 res.status(200).json({
@@ -78,14 +78,20 @@ const updateUser = [
     validateUserName, validateUserCredentials, validateRequest,
     expressAsyncHandler(async (req, res)=>{
         const user = req.body.user;
-        await updateUserQuery(user);
+        const response = await updateUserQuery(user);
+        if(!response.success){
+            return res.status(400).json({err: response.error})
+        }
         res.status(201).json({user: user});
     })
 ]
 
 const removeUser = expressAsyncHandler( async(req, res)=>{
     const userId = req.params.user_id;
-    await deleteUser(userId);
+    const response = await deleteUser(userId);
+    if(!response.success){
+        return res.status(400).json({err: response.error})
+    }
     res.status(200).json({message: "User deleted successfully."})
 })
 

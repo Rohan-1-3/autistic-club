@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Form, NavLink } from "react-router";
+import { Form, NavLink, useActionData } from "react-router";
+import ErrorsComponent from "../ErrorsComponent";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -14,9 +15,13 @@ function Login() {
     }));
   };
 
-
+  const result = useActionData();
+  console.log(result)
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 text-black">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4 text-black">
+      {
+        result && result.errors && <ErrorsComponent errors={result.errors}/>
+      }
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
         <Form
             method="post"

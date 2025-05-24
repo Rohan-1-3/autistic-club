@@ -9,7 +9,11 @@ const validateMessage = [
 ]
 
 const getAllMessages = expressAsyncHandler(async(req, res)=>{
-    const messages = await getAllMessagesQuery()
+    const response = await getAllMessagesQuery();
+    if(!response.success){
+        return res.status(400).json({err: response.error})
+    }
+    const messages = response.data;
     if(messages){
         return res.status(200).json({messages: messages})
     }
@@ -17,7 +21,11 @@ const getAllMessages = expressAsyncHandler(async(req, res)=>{
 })
 
 const getAllMessagesByUser = expressAsyncHandler(async(req, res)=>{
-    const messages = await getMessagesByUser(req.params.user_id);
+    const response = await getMessagesByUser(req.params.user_id);
+    if(!response.success){
+        return res.status(400).json({err: response.error})
+    }
+    const messages = response.data;
     if(messages){
         return res.status(200).json({messages: messages})
     }
@@ -27,7 +35,11 @@ const getAllMessagesByUser = expressAsyncHandler(async(req, res)=>{
 const addMessage = [
     validateMessage, validateRequest,
     expressAsyncHandler(async(req, res)=>{
-        const messageId= await addAMessage(req.body.userId, req.body.messageDetails)
+        const response = await addAMessage(req.body.userId, req.body.messageDetails)
+        if(!response.success){
+            return res.status(400).json({err: response.error})
+        }
+        const messageId = response.data;
         return res.status(201).json({
             message: "Message successfully added.",
             messageId: messageId
@@ -36,14 +48,20 @@ const addMessage = [
 ]
 
 const removeMessage = expressAsyncHandler(async(req, res)=>{
-    await deleteMessage(req.params.message_id)
+    const response = await deleteMessage(req.params.message_id)
+    if(!response.success){
+        return res.status(400).json({err: response.error})
+    }
     return res.status(200).json({message: "Message successfully deleted."})
 })
 
 const editMesssage = [
     validateMessage, validateRequest,
     expressAsyncHandler(async(req, res)=>{
-        await updateMessage(req.params.message_id, req.body.messageDetails);
+        const response = await updateMessage(req.params.message_id, req.body.messageDetails);
+        if(!response.success){
+            return res.status(400).json({err: response.error})
+        }
         return res.status(200).json({message: "Message successfully updated."})
     })
 ]
