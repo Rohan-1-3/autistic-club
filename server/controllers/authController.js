@@ -47,7 +47,7 @@ const loginUser = [
     expressAsyncHandler(async (req, res, next) => {
         passport.authenticate('local', (err, user, info) => {
             if (err) return next(err);
-            if (!user) return res.status(401).json([ info ]);
+            if (!user) return res.status(401).json({err: [info]});
             
             req.logIn(user, (err) => {
                 if (err) return next(err);
@@ -65,13 +65,17 @@ const loginUser = [
     })
 ];
 
-const logoutUser = (req, res) => {
-    try {
-        req.logout();
-        res.status(200).json({ message: 'Logout successful' });
-    } catch (err) {
-        res.status(500).json({ message: 'Logout failed', error: err.message });
-    }
+const logoutUser = (req, res, next) => {
+    req.logout(function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Logout failed', error: err.message });
+        }
+
+        req.session.destroy(() => {
+            res.clearCookie("connect.sid"); // adjust if your session cookie name is different
+            res.status(200).json({ message: 'Logout successful' });
+        });
+    });
 };
 
 const updateUser = [
@@ -95,5 +99,13 @@ const removeUser = expressAsyncHandler( async(req, res)=>{
     res.status(200).json({message: "User deleted successfully."})
 })
 
-export { registerUser, loginUser, logoutUser, removeUser, updateUser };
+const authenticateUser = expressAsyncHandler(async(req, res)=>{
+    if(req.isAuthenticated()){
+        res.status(200).json({user: req.user})
+    }else{
+        req.status(401).json({msg: "User Not Authenticated."})
+    }
+})
+
+export { registerUser, loginUser, logoutUser, removeUser, updateUser, authenticateUser };
 

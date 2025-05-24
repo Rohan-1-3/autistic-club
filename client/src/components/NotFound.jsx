@@ -1,9 +1,11 @@
 import { Link } from 'react-router';
 import Footer from './Footer';
+import Header from './Header';
 
 function NotFound() {
   return (
     <>
+    <Header />
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-300 via-gray to-purple-300 text-gray-800">
       <div className="text-center px-6 max-w-2xl">
         <h1 className="text-6xl font-bold mb-4">404</h1>

@@ -22,6 +22,13 @@ export const routes = createBrowserRouter([
             {
                 path: "login",
                 Component: Login,
+                loader: async ()=>{
+                    const respone = await fetch("/api/authenticate_user", { credentials: "include" })
+                    if(respone.ok){
+                        return redirect("/chatroom")
+                    }
+                    return null
+                },
                 action: async ({request})=>{
                     const formData = await request.formData();
                     const payload = Object.fromEntries(formData.entries());
@@ -36,12 +43,19 @@ export const routes = createBrowserRouter([
                         return redirect("/chatroom")
                     }
                     const errors = await response.json()
-                    return { errors: errors}
+                    return { errors: errors.err}
                 }
             },
             {
                 path: "signup",
                 Component: Signup,
+                loader: async ()=>{
+                    const respone = await fetch("/api/authenticate_user", { credentials: "include" })
+                    if(respone.ok){
+                        return redirect("/chatroom")
+                    }
+                    return null
+                },
                 action: async ({request})=>{
                     const formData = await request.formData();
                     const pass = formData.get("password");

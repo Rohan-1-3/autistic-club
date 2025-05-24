@@ -20,10 +20,10 @@ function Homepage() {
             Enter Chatroom
           </Link>
           <Link
-            to="/user/signup"
+            to="/user/login"
             className="border border-blue-600 text-blue-600 px-6 py-3 rounded-xl shadow-md hover:bg-blue-100 transition"
           >
-            Login / Sign Up
+            Login
           </Link>
         </div>
 

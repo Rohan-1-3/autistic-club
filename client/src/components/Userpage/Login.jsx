@@ -16,7 +16,7 @@ function Login() {
   };
 
   const result = useActionData();
-  console.log(result)
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4 text-black">
       {
