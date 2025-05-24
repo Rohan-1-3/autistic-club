@@ -68,15 +68,15 @@ const deleteUser = async(userId)=>{
     }
 }
 
-const addAMessage = async(userId, messageDetails)=>{
+const addAMessage = async(userId, message)=>{
     const messageId = uuid();
-    const { message, date } = messageDetails;
     try{
-        await pool.query(`INSERT INTO messages (userId, id, message, date, isEdited)
-                          VALUES ($1, $2, $3, $4, $5)`,[userId, messageId, message, date, false])
+        const result = await pool.query(`INSERT INTO messages (userId, id, message)
+                          VALUES ($1, $2, $3)
+                          RETURNING *`,[userId, messageId, message])
         return { 
             success: true,
-            data: messageId
+            data: result.rows[0]
          }
     }catch(err){
         return {

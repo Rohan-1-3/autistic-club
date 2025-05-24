@@ -4,7 +4,7 @@ import { body } from "express-validator"
 import { validateRequest } from "../configs/validateRequest.js"
 
 const validateMessage = [
-    body("messageText").trim().notEmpty().withMessage("Message must not be empty.")
+    body("message").trim().notEmpty().withMessage("Message must not be empty.")
     .isLength({min: 8}).withMessage("Message must be longer than 8 letters.")
 ]
 
@@ -35,15 +35,12 @@ const getAllMessagesByUser = expressAsyncHandler(async(req, res)=>{
 const addMessage = [
     validateMessage, validateRequest,
     expressAsyncHandler(async(req, res)=>{
-        const response = await addAMessage(req.body.userId, req.body.messageDetails)
+        const response = await addAMessage(req.body.userId, req.body.message)
         if(!response.success){
             return res.status(400).json({err: response.error})
         }
-        const messageId = response.data;
-        return res.status(201).json({
-            message: "Message successfully added.",
-            messageId: messageId
-        })
+        const message = response.data;
+        return res.status(201).json(message)
     })
 ]
 

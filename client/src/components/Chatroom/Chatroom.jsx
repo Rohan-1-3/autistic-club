@@ -6,11 +6,15 @@ import JoinMemberPrompt from './JoinMemberPromt';
 import MessagesList from './MessageList';
 
 function Chatroom() {
-  const { user, messages } = useLoaderData();
+  const { user, messages: initialMessages } = useLoaderData();
+
   const [userData, setUserData] = useState(user);
+  const [messages, setMessages] = useState(initialMessages);
+  
   const [adminMode, setAdminMode] = useState(false);
   const [memberFormOpen, setMemberFormOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [messageText, setMessageText] = useState("")
 
   const handleBeingMember = () => {
     setMemberFormOpen(true);
@@ -33,6 +37,26 @@ function Chatroom() {
       setUserData({ ...updatedUser });
     }
   };
+
+  const handleMessageSend = async ()=>{
+    const messageData = {
+        userId: userData.id, 
+        message: messageText,
+    }
+    const response = await fetch("/api/message/add",{
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageData)
+    })
+    if(response.ok){
+        const message = await response.json();
+        console.log(message)
+        setMessages(prev=>[...prev, message]);
+        setMessageText("")
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-100 to-blue-100 flex flex-col items-center p-6 font-sans text-gray-800">
@@ -64,13 +88,17 @@ function Chatroom() {
         ${!userData.ismember ? 'blur-sm pointer-events-none select-none' : ''}
         transition-filter duration-300`}
       >
-        {
-        userData.ismember && 
-        <div>
-            <button className="text-white m-auto w-full cursor-pointer">Add Message</button>
+        
+        <div className='message-container flex flex-col'>
+            <MessagesList messages={messages} currentUsername={userData.username} />
+            {
+                userData.ismember && 
+                <div>
+                    <input value={messageText} onChange={(e)=>setMessageText(e.target.value)} type="text" className='border border-black w-full'/>
+                    <button onClick={handleMessageSend} className="text-white m-auto cursor-pointer">Send</button>
+                </div>
+            }
         </div>
-        }
-        <MessagesList messages={messages} currentUsername={userData.username} />
       </main>
     </div>
   );

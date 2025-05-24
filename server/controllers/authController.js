@@ -1,6 +1,6 @@
 import { hash } from "bcryptjs";
 import { body, validationResult } from "express-validator"
-import { addAUser, deleteUser, updateUser as updateUserQuery } from "../db/queries.js";
+import { addAUser, deleteUser, updateUser as updateUserQuery, getUser as getUserQuery } from "../db/queries.js";
 import passport from "passport";
 import expressAsyncHandler from "express-async-handler";
 import { validateRequest } from "../configs/validateRequest.js";
@@ -90,6 +90,13 @@ const updateUser = [
     })
 ]
 
+const getUser = expressAsyncHandler(async(req, res)=>{
+    console.log(req.params.user_id)
+    const user = await getUserQuery(req.params.user_id)
+    console.log(user)
+    return res.status(200).json(user);
+})
+
 const removeUser = expressAsyncHandler( async(req, res)=>{
     const userId = req.params.user_id;
     const response = await deleteUser(userId);
@@ -107,5 +114,5 @@ const authenticateUser = expressAsyncHandler(async(req, res)=>{
     }
 })
 
-export { registerUser, loginUser, logoutUser, removeUser, updateUser, authenticateUser };
+export { registerUser, loginUser, logoutUser, removeUser, updateUser, authenticateUser, getUser };
 
