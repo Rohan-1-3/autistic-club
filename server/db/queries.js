@@ -12,7 +12,7 @@ const addAUser = async (user)=>{
         return userId;
     }catch(err){
         console.log(err);
-        return null;
+        return err;
     }
 }
 

@@ -39,10 +39,11 @@ app.use(passport.session());
 
 app.use(express.json());
 
-app.use("/", authRouter);
+app.use("/api" ,authRouter);
 app.use("/message", messageRouter)
 
 app.use((err, req, res, next) => {
+    console.log("No such request")
   res.status(500).json({ message: err.message });
 });
 

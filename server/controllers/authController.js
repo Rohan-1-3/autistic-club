@@ -33,8 +33,11 @@ const registerUser = [
                             isMember: false,
                             isAdmin: false    
                         };
-            const userId = await addAUser(user);
-            res.status(201).json({id: userId})
+            const response = await addAUser(user);
+            if(response.detail){
+                return res.status(400).json({err: response})
+            }
+            res.status(201).json({id: response})
         }
     )
 ]
