@@ -15,7 +15,7 @@ const getAllMessages = expressAsyncHandler(async(req, res)=>{
     }
     const messages = response.data;
     if(messages){
-        return res.status(200).json({messages: messages})
+        return res.status(200).json(messages)
     }
     return res.status(200).json({ messages: [] });
 })

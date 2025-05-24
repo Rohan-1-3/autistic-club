@@ -37,14 +37,14 @@ const getUser = async(userId)=>{
 }
 
 const updateUser = async(updatedUser)=>{
-    const { userId, firstname, lastname, username, password, isMember, isAdmin } = updatedUser;
+    const { id, firstname, lastname, username, password, ismember, isadmin } = updatedUser;
     try{
         await pool.query(`
             UPDATE auth_users
             SET firstname = $1, lastname = $2, username = $3,
-                password = $3, isMember = $5, isAdmin = $6
+                password = $4, ismember = $5, isadmin = $6
             WHERE id = $7
-            `,[firstname, lastname, username, password, isMember, isAdmin, userId])
+            `,[firstname, lastname, username, password, ismember, isadmin, id])
             return {
                 success: true
             }

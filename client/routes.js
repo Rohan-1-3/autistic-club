@@ -6,6 +6,8 @@ import Login from "./src/components/Userpage/Login";
 import Signup from "./src/components/Userpage/Signup";
 import { Component } from "react";
 import NotFound from "./src/components/NotFound";
+import ChatroomLayout from "./src/components/Chatroom/ChatroomLayout";
+import Chatroom from "./src/components/Chatroom/Chatroom";
 
 export const routes = createBrowserRouter([
     {
@@ -83,13 +85,32 @@ export const routes = createBrowserRouter([
                     return { errors: error.err}
                 }
             },
-            // {
-            //     element: ,
-            //     children: {
-            //         path: "chatroom", Component
-            //     }
-            // }
         ]
+    },
+    {
+        path:"chatroom",
+        Component: ChatroomLayout,
+        children:[
+            { 
+                index: true, 
+                Component: Chatroom,
+                loader: async () => {
+                    const response = await fetch("/api/authenticate_user", { credentials: "include" });
+                    if (!response.ok) return redirect("/user/login");
+
+                    const userData = await response.json();
+
+                    const res = await fetch("/api/message/all");
+                    if (res.status === 200) {
+                        const messages = await res.json();
+                        return { user: userData.user, messages };
+                    }
+
+                    return null;
+                }
+            }
+        ],
+        
     },
     {
         path: "*",

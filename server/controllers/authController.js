@@ -19,7 +19,7 @@ const validateUserCredentials = [
     .isLength({min: 4, max: 16}).withMessage("Username length to be between 4 and 16.")
     .escape(),
     body("password").trim().notEmpty().withMessage("Password cannot be empty").bail()
-    .isLength({min: 8, max: 16}).withMessage("Password length to be between 8 and 16.")
+    .isLength({min: 8 }).withMessage("Password length to be between 8 and 16.")
     .escape()
 ]
 
@@ -81,12 +81,12 @@ const logoutUser = (req, res, next) => {
 const updateUser = [
     validateUserName, validateUserCredentials, validateRequest,
     expressAsyncHandler(async (req, res)=>{
-        const user = req.body.user;
+        const user = req.body;
         const response = await updateUserQuery(user);
         if(!response.success){
             return res.status(400).json({err: response.error})
         }
-        res.status(201).json({user: user});
+        res.status(201).json(user);
     })
 ]
 

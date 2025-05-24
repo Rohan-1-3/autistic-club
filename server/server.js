@@ -40,7 +40,7 @@ app.use(passport.session());
 app.use(express.json());
 
 app.use("/api" ,authRouter);
-app.use("/message", messageRouter)
+app.use("/api/message", messageRouter)
 
 app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
