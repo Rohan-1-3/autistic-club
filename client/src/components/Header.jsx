@@ -1,7 +1,6 @@
-import React from 'react';
 import { useNavigate } from 'react-router';
 
-function Header() {
+function Header({fromChatroom = false}) {
     const navigate = useNavigate()
 
     const handleLogout = async ()=>{
@@ -19,12 +18,12 @@ function Header() {
             <h1 className="text-lg font-semibold tracking-wide">AutiChat</h1>
         </div>
 
-        <button
+        {fromChatroom && <button
             onClick={handleLogout}
             className="bg-white text-blue-600 px-4 py-2 rounded-md shadow hover:bg-blue-100 transition"
         >
             Logout
-        </button>
+        </button>}
         </header>
     );
 }

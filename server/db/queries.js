@@ -106,6 +106,7 @@ const getAllMessages = async()=>{
         const { rows } = await pool.query(`
             SELECT m.id as id, username, date, message, isEdited FROM messages m
             JOIN auth_users au ON au.id = m.userId
+            ORDER BY date
             `)
         return {
             success: true,
@@ -139,9 +140,9 @@ const updateMessage = async(messageId, updatedMessageDetail)=>{
     try{
         await pool.query(`
             UPDATE messages 
-            SET message = $1, date = $2, isEdited = $3
-            WHERE id = $4
-            `,[message, new Date(), true, messageId])
+            SET message = $1, isEdited = $2
+            WHERE id = $3
+            `,[message, true, messageId])
         return { success: true }
     }catch(err){
         return {

@@ -6,7 +6,7 @@ import { Outlet } from 'react-router';
 function ChatroomLayout() {
     return (
         <div className='homepage-layout flex flex-col min-h-screen'>
-            <Header />
+            <Header fromChatroom={true}/>
             <main className='flex-grow'>
                 <Outlet />
             </main>

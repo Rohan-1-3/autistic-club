@@ -1,4 +1,4 @@
-function Message({ messageDetails, isUser, handleEditClicked }) {
+function Message({ messageDetails, isUser, handleEditClicked, isAdmin, handleDeleteClicked }) {
   const { username, message, date, isedited } = messageDetails;
   const formattedDate = new Date(date).toLocaleString();
 
@@ -7,26 +7,34 @@ function Message({ messageDetails, isUser, handleEditClicked }) {
       ${isUser ? "bg-blue-500 text-white ml-auto" : "bg-gray-200 text-black mr-auto"}
     `}>
 
-{isUser && (
-        <button 
-          onClick={() => handleEditClicked(messageDetails)} 
-          className="absolute bottom-2 right-2 text-white opacity-70 hover:opacity-100"
+      <div className="absolute bottom-2 right-2 text-white cursor-pointer opacity-70 ">
+        {isUser && (
+        <span 
+          onClick={() => handleEditClicked(messageDetails)}
+          className="text-green-500"
         >
           ✎
-        </button>
+        </span>
       )}
+      {
+        (isUser || isAdmin) && (
+          <span 
+          className="text-red-500"
+          onClick={() => handleDeleteClicked(messageDetails)} 
+        >
+          🗑
+        </span>
+        )
+      }
+      </div>
+
       <div className="w-full text-sm font-semibold mb-1 flex justify-between">
         <p>{isUser ? "You" : username}</p>
         <span>{formattedDate}</span>
       </div>
 
       <div className="text-base whitespace-pre-wrap break-words">
-        {message}
-      </div>
-
-      <div className="text-xs mt-2 flex justify-between items-center opacity-80">
-
-        {isedited && <span className="italic ml-2">Edited</span>}
+        <p>{message}{isedited && <span className="italic text-xs ml-1">(Edited)</span>}</p>
       </div>
     </div>
   );
