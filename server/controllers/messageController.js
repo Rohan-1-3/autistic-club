@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler"
-import { addAMessage, deleteMessage, getAllMessages as getAllMessagesQuery, getMessagesByUser, updateMessage } from "../db/queries.js"
+import { addAMessage, deleteMessage, getAllMessages as getAllMessagesQuery, getMessagesByUser, getUser, updateMessage } from "../db/queries.js"
 import { body } from "express-validator"
 import { validateRequest } from "../configs/validateRequest.js"
 
@@ -39,7 +39,16 @@ const addMessage = [
         if(!response.success){
             return res.status(400).json({err: response.error})
         }
-        const message = response.data;
+        const data = response.data;
+        const userResponse = await getUser(data.userid);
+        const username = userResponse.data.username;
+        const message = {
+            username,
+            id: data.id,
+            message: data.message,
+            date: data.date,
+            isedited: data.isedited
+        }
         return res.status(201).json(message)
     })
 ]
@@ -55,7 +64,7 @@ const removeMessage = expressAsyncHandler(async(req, res)=>{
 const editMesssage = [
     validateMessage, validateRequest,
     expressAsyncHandler(async(req, res)=>{
-        const response = await updateMessage(req.params.message_id, req.body.messageDetails);
+        const response = await updateMessage(req.params.message_id, req.body);
         if(!response.success){
             return res.status(400).json({err: response.error})
         }

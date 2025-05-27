@@ -14,7 +14,10 @@ function Chatroom() {
   const [adminMode, setAdminMode] = useState(false);
   const [memberFormOpen, setMemberFormOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  
+  const [editMessageFlag, setEditMessageFlag] = useState(false);
   const [messageText, setMessageText] = useState("")
+  const [messageUpdateId, setMessageUpdateId] = useState("")
 
   const handleBeingMember = () => {
     setMemberFormOpen(true);
@@ -58,6 +61,37 @@ function Chatroom() {
     }
   }
 
+  const handleMessageUpdate = async ()=>{
+    const messageData = {
+      userId: userData.id,
+      message: messageText
+    }
+    const response = await fetch(`/api/message/update/${messageUpdateId}`,{
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(messageData)
+    })
+
+    if(response.ok){
+      const res = await fetch("/api/message/all");
+      if (res.ok) {
+          const updatedMessages = await res.json();
+          setMessages(updatedMessages)
+      }
+      setMessageText("")
+      setEditMessageFlag(false)
+      setMessageUpdateId("");
+    }
+  }
+
+  const handleEditClicked = (messageDetails) => {
+    setEditMessageFlag(true);
+    setMessageText(messageDetails.message);
+    setMessageUpdateId(messageDetails.id)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-100 to-blue-100 flex flex-col items-center p-6 font-sans text-gray-800">
       <header className="w-full max-w-4xl mb-6">
@@ -90,12 +124,12 @@ function Chatroom() {
       >
         
         <div className='message-container flex flex-col'>
-            <MessagesList messages={messages} currentUsername={userData.username} />
+            <MessagesList messages={messages} currentUsername={userData.username} handleEditClicked={handleEditClicked} />
             {
                 userData.ismember && 
                 <div>
                     <input value={messageText} onChange={(e)=>setMessageText(e.target.value)} type="text" className='border border-black w-full'/>
-                    <button onClick={handleMessageSend} className="text-white m-auto cursor-pointer">Send</button>
+                    <button onClick={editMessageFlag ? handleMessageUpdate : handleMessageSend} className="text-white m-auto cursor-pointer">{editMessageFlag ? "Update" : "Send"}</button>
                 </div>
             }
         </div>

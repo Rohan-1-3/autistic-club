@@ -1,6 +1,6 @@
 import Message from './Message';
 
-export default function MessagesList({ messages, currentUsername }) {
+export default function MessagesList({ messages, currentUsername, handleEditClicked }) {
   if (!messages || messages.length === 0) {
     return (
       <div className="text-center text-gray-500 mt-20 flex grow">
@@ -16,6 +16,7 @@ export default function MessagesList({ messages, currentUsername }) {
           key={message.id || message.date}
           messageDetails={message}
           isUser={message.username === currentUsername}
+          handleEditClicked={handleEditClicked}
         />
       ))}
     </div>

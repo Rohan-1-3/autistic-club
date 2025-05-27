@@ -1,38 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React from 'react';
 
-function Message({ messageDetails, isUser }) {
-  const { message, date, isedited } = messageDetails;
+function Message({ messageDetails, isUser, handleEditClicked }) {
+  const { username, message, date, isedited } = messageDetails;
   const formattedDate = new Date(date).toLocaleString();
-  const username = useRef();
-  
-  useEffect(() => {
-    const getMessageOwner = async () => {
-        console.log(messageDetails.userid, messageDetails)
-      const res = await fetch(`/api/get/${messageDetails.userid}`);
-      if(res.ok){
-        const user = await res.json()
-        username.current = user.username;
-        console.log(user)
-      }
-
-    };
-    if(!messageDetails.username){
-        getMessageOwner();
-    }
-  }, []);
 
   return (
-    <div
-      className={`max-w-md p-3 my-2 rounded-xl shadow-sm 
-      ${
-        isUser
-          ? "bg-blue-500 text-white ml-auto"
-          : "bg-gray-200 text-black mr-auto"
-      }
-    `}
-    >
+    <div className={`max-w-md p-3 my-2 rounded-xl shadow-sm 
+      ${isUser ? "bg-blue-500 text-white ml-auto" : "bg-gray-200 text-black mr-auto"}
+    `}>
       <div className="text-sm font-semibold">
-        {isUser ? "You" : messageDetails ? messageDetails.username : username.current}
+        {isUser ? "You" : username}
       </div>
 
       <div className="text-base mt-1 whitespace-pre-wrap break-words">
@@ -41,7 +18,11 @@ function Message({ messageDetails, isUser }) {
 
       <div className="text-xs mt-2 flex justify-between items-center opacity-80">
         <span>{formattedDate}</span>
-        {isedited && <span className="italic">edited</span>}
+        {isedited && <span className="italic">Edited</span>}
+        {
+          isUser && 
+          <button onClick={() => handleEditClicked(messageDetails)} className='text-xs underline hover:text-blue-700'>Edit</button>  
+        }
       </div>
     </div>
   );
