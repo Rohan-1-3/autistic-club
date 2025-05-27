@@ -10,7 +10,7 @@ export default function MessagesList({ messages, currentUsername, handleEditClic
   }
   
   return (
-    <div className="space-y-4 flex grow">
+    <div className="space-y-4 flex-grow overflow-y-auto max-h-[500px] px-2">
       {messages.map((message) => (
         <Message
           key={message.id || message.date}

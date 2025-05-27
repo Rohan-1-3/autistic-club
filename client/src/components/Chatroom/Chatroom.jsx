@@ -4,6 +4,7 @@ import AdminPanel from './AdminPanel';
 import MemberForm from './MemberForm';
 import JoinMemberPrompt from './JoinMemberPromt';
 import MessagesList from './MessageList';
+import { toast } from 'react-toastify';
 
 function Chatroom() {
   const { user, messages: initialMessages } = useLoaderData();
@@ -17,7 +18,7 @@ function Chatroom() {
   
   const [editMessageFlag, setEditMessageFlag] = useState(false);
   const [messageText, setMessageText] = useState("")
-  const [messageUpdateId, setMessageUpdateId] = useState("")
+  const [message, setMessage] = useState(null);
 
   const handleBeingMember = () => {
     setMemberFormOpen(true);
@@ -42,6 +43,7 @@ function Chatroom() {
   };
 
   const handleMessageSend = async ()=>{
+    toast("Adding Message....");
     const messageData = {
         userId: userData.id, 
         message: messageText,
@@ -62,11 +64,13 @@ function Chatroom() {
   }
 
   const handleMessageUpdate = async ()=>{
+    if(message && message.message === messageText) return;
+    toast("Updating Message....");
     const messageData = {
       userId: userData.id,
       message: messageText
     }
-    const response = await fetch(`/api/message/update/${messageUpdateId}`,{
+    const response = await fetch(`/api/message/update/${message.id}`,{
       method: "PUT",
       headers: {
         'Content-Type': 'application/json',
@@ -82,14 +86,21 @@ function Chatroom() {
       }
       setMessageText("")
       setEditMessageFlag(false)
-      setMessageUpdateId("");
+      setMessage("");
     }
   }
 
   const handleEditClicked = (messageDetails) => {
     setEditMessageFlag(true);
     setMessageText(messageDetails.message);
-    setMessageUpdateId(messageDetails.id)
+    setMessage(messageDetails)
+  }
+
+  const handleEditCancel = ()=>{
+    toast("Canceling Update....");
+    setMessageText("")
+    setEditMessageFlag(false)
+    setMessage("");
   }
 
   return (
@@ -123,16 +134,45 @@ function Chatroom() {
         transition-filter duration-300`}
       >
         
-        <div className='message-container flex flex-col'>
-            <MessagesList messages={messages} currentUsername={userData.username} handleEditClicked={handleEditClicked} />
-            {
-                userData.ismember && 
-                <div>
-                    <input value={messageText} onChange={(e)=>setMessageText(e.target.value)} type="text" className='border border-black w-full'/>
-                    <button onClick={editMessageFlag ? handleMessageUpdate : handleMessageSend} className="text-white m-auto cursor-pointer">{editMessageFlag ? "Update" : "Send"}</button>
-                </div>
-            }
-        </div>
+        <div className='message-container flex flex-col h-full px-4 py-2'>
+  <div className="flex-grow overflow-y-auto">
+    <MessagesList 
+      messages={messages} 
+      currentUsername={userData.username} 
+      handleEditClicked={handleEditClicked} 
+    />
+  </div>
+
+  {userData.ismember && (
+    <div className="flex flex-col sm:flex-row items-center gap-2 mt-4">
+      <input 
+        value={messageText}
+        onChange={(e) => setMessageText(e.target.value)}
+        type="text"
+        placeholder="Type your message..."
+        className='flex-grow border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
+      />
+
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={editMessageFlag ? handleMessageUpdate : handleMessageSend}
+          className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition"
+        >
+          {editMessageFlag ? "Update" : "Send"}
+        </button>
+
+              {editMessageFlag && (
+                <button 
+                  onClick={handleEditCancel}
+                  className="bg-gray-400 text-white px-4 py-2 rounded-full hover:bg-gray-500 transition"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
       </main>
     </div>
   );
