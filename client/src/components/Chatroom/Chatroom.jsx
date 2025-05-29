@@ -63,7 +63,6 @@ function Chatroom() {
     })
     if (response.ok) {
       const message = await response.json();
-      console.log(message)
       setMessages(prev => [...prev, message]);
       setMessageText("")
     }

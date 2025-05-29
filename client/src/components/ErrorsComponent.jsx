@@ -1,7 +1,6 @@
 import React from 'react';
 
 function ErrorsComponent({ errors }) {
-    console.log(errors)
    return (
     <div className=''>
         <ul>

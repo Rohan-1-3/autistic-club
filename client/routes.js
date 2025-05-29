@@ -91,8 +91,7 @@ export const routes = createBrowserRouter([
                         return redirect("/user/login")
                     }
                     const error = await response.json()
-                    console.log(error)
-                    return { errors: error.err}
+                    return { errors: [error.err]}
                 }
             },
         ]
