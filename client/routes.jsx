@@ -8,6 +8,7 @@ import NotFound from "./src/components/NotFound";
 import ChatroomLayout from "./src/components/Chatroom/ChatroomLayout";
 import Chatroom from "./src/components/Chatroom/Chatroom";
 import { toast } from "react-toastify";
+import ErrorPage from "./src/components/ErrorPage";
 
 const baseBackendUrl = import.meta.env.VITE_API_URL
 
@@ -15,6 +16,7 @@ export const routes = createBrowserRouter([
     {
         path: "/",
         Component: HomepageLayout,
+        errorElement: <ErrorPage />,
         children:[
             {index: true, Component: Homepage}
         ]
@@ -22,6 +24,7 @@ export const routes = createBrowserRouter([
     {
         path: "user",
         Component: UserpageLayout,
+        errorElement: <ErrorPage />,
         children:[
             {
                 path: "login",
@@ -100,6 +103,7 @@ export const routes = createBrowserRouter([
     {
         path:"chatroom",
         Component: ChatroomLayout,
+        errorElement: <ErrorPage />,
         children:[
             { 
                 index: true, 

@@ -95,7 +95,7 @@ const getUser = expressAsyncHandler(async(req, res)=>{
     if(!response.success){
         return res.status(400).json({err: response.error})
     }
-    return res.status(200).json(user);
+    return res.status(200).json(response.data);
 })
 
 const removeUser = expressAsyncHandler( async(req, res)=>{
@@ -111,7 +111,7 @@ const authenticateUser = expressAsyncHandler(async(req, res)=>{
     if(req.isAuthenticated()){
         res.status(200).json({user: req.user})
     }else{
-        res.status(401).json({msg: "User Not Authenticated.", prod: process.env.NODE_ENV})
+        res.status(401).json({msg: "User Not Authenticated."})
     }
 })
 
