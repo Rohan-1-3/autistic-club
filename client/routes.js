@@ -39,6 +39,7 @@ export const routes = createBrowserRouter([
                 action: async ({request})=>{
                     const formData = await request.formData();
                     const payload = Object.fromEntries(formData.entries());
+                    console.log(JSON.stringify(payload))
                     const response = await fetch(`${baseBackendUrl}/api/login`,{
                         method: "POST",
                         headers:{

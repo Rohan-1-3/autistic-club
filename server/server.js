@@ -15,6 +15,8 @@ const pgSession = connectPgSimple(session);
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(cors({
     origin: process.env.NODE_ENV === "production" ? "https://autistic-club-8ano.onrender.com" : "http://localhost:5173",
     credentials: true
