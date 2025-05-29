@@ -111,7 +111,7 @@ const authenticateUser = expressAsyncHandler(async(req, res)=>{
     if(req.isAuthenticated()){
         res.status(200).json({user: req.user})
     }else{
-        res.status(401).json({msg: "User Not Authenticated."})
+        res.status(401).json({msg: "User Not Authenticated.", prod: process.env.NODE_ENV})
     }
 })
 
