@@ -91,9 +91,10 @@ const updateUser = [
 ]
 
 const getUser = expressAsyncHandler(async(req, res)=>{
-    console.log(req.params.user_id)
-    const user = await getUserQuery(req.params.user_id)
-    console.log(user)
+    const response = await getUserQuery(req.params.user_id)
+    if(!response.success){
+        return res.status(400).json({err: response.error})
+    }
     return res.status(200).json(user);
 })
 

@@ -4,10 +4,12 @@ import Homepage from "./src/components/Homepage/Homepage";
 import UserpageLayout from "./src/components/Userpage/UserpageLayout";
 import Login from "./src/components/Userpage/Login";
 import Signup from "./src/components/Userpage/Signup";
-import { Component } from "react";
 import NotFound from "./src/components/NotFound";
 import ChatroomLayout from "./src/components/Chatroom/ChatroomLayout";
 import Chatroom from "./src/components/Chatroom/Chatroom";
+import { toast } from "react-toastify";
+
+const baseBackendUrl = import.meta.env.VITE_API_URL
 
 export const routes = createBrowserRouter([
     {
@@ -25,8 +27,11 @@ export const routes = createBrowserRouter([
                 path: "login",
                 Component: Login,
                 loader: async ()=>{
-                    const respone = await fetch("/api/authenticate_user", { credentials: "include" })
+                    const respone = await fetch(`${baseBackendUrl}/api/authenticate_user`, { credentials: "include" })
                     if(respone.ok){
+                        toast("Logged in successfully", {
+                            type: "success",
+                        });
                         return redirect("/chatroom")
                     }
                     return null
@@ -34,12 +39,13 @@ export const routes = createBrowserRouter([
                 action: async ({request})=>{
                     const formData = await request.formData();
                     const payload = Object.fromEntries(formData.entries());
-                    const response = await fetch("/api/login",{
+                    const response = await fetch(`${baseBackendUrl}/api/login`,{
                         method: "POST",
                         headers:{
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        credentials: "include"
                     })
                     if(response.status === 200){
                         return redirect("/chatroom")
@@ -52,8 +58,11 @@ export const routes = createBrowserRouter([
                 path: "signup",
                 Component: Signup,
                 loader: async ()=>{
-                    const respone = await fetch("/api/authenticate_user", { credentials: "include" })
+                    const respone = await fetch(`${baseBackendUrl}/api/authenticate_user`, { credentials: "include" })
                     if(respone.ok){
+                        toast("Logged in successfully", {
+                            type: "success",
+                        });
                         return redirect("/chatroom")
                     }
                     return null
@@ -70,12 +79,13 @@ export const routes = createBrowserRouter([
                         ]}
                     }
                     const payload = Object.fromEntries(formData.entries());
-                    const response = await fetch("/api/register",{
+                    const response = await fetch(`${baseBackendUrl}/api/register`,{
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        credentials: "include"
                     })
                     if(response.status === 201){
                         return redirect("/user/login")
@@ -95,12 +105,12 @@ export const routes = createBrowserRouter([
                 index: true, 
                 Component: Chatroom,
                 loader: async () => {
-                    const response = await fetch("/api/authenticate_user", { credentials: "include" });
+                    const response = await fetch(`${baseBackendUrl}/api/authenticate_user`, { credentials: "include" });
                     if (!response.ok) return redirect("/user/login");
 
                     const userData = await response.json();
 
-                    const res = await fetch("/api/message/all");
+                    const res = await fetch(`${baseBackendUrl}/api/message/all`);
                     if (res.status === 200) {
                         const messages = await res.json();
                         return { user: userData.user, messages };

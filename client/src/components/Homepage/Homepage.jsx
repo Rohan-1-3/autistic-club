@@ -14,7 +14,7 @@ function Homepage() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            to="/chat"
+            to="/chatroom"
             className=" px-6 py-3 rounded-xl shadow-md hover:bg-white transition"
           >
             Enter Chatroom

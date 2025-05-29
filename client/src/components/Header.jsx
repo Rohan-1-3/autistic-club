@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router';
+const baseBackendUrl = import.meta.env.VITE_API_URL
 
 function Header({fromChatroom = false}) {
     const navigate = useNavigate()
 
     const handleLogout = async ()=>{
-        await fetch("/api/logout",{
+        await fetch(`${baseBackendUrl}/api/logout`,{
             method: "POST",
             credentials: "include"
         })

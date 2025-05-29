@@ -6,6 +6,8 @@ import JoinMemberPrompt from './JoinMemberPromt';
 import MessagesList from './MessageList';
 import { toast } from 'react-toastify';
 
+const baseBackendUrl = import.meta.env.VITE_API_URL
+
 function Chatroom() {
   const { user, messages: initialMessages } = useLoaderData();
 
@@ -29,12 +31,13 @@ function Chatroom() {
   const handleJoin = async (e) => {
     e.preventDefault();
     if (!agreed) return;
-    const res = await fetch(`/api/update/${userData.id}`, {
+    const res = await fetch(`${baseBackendUrl}/api/update/${userData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ ...userData, ismember: true }),
+      credentials: "include"
     });
     if (res.ok) {
       const updatedUser = await res.json();
@@ -50,12 +53,13 @@ function Chatroom() {
       userId: userData.id,
       message: messageText,
     }
-    const response = await fetch("/api/message/add", {
+    const response = await fetch(`${baseBackendUrl}/api/message/add`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(messageData)
+      body: JSON.stringify(messageData),
+      credentials: "include"
     })
     if (response.ok) {
       const message = await response.json();
@@ -72,16 +76,17 @@ function Chatroom() {
       userId: userData.id,
       message: messageText
     }
-    const response = await fetch(`/api/message/update/${message.id}`, {
+    const response = await fetch(`${baseBackendUrl}/api/message/update/${message.id}`, {
       method: "PUT",
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(messageData)
+      body: JSON.stringify(messageData),
+      credentials: "include"
     })
 
     if (response.ok) {
-      const res = await fetch("/api/message/all");
+      const res = await fetch(`${baseBackendUrl}/api/message/all`,{ credentials: "include" });
       if (res.ok) {
         const updatedMessages = await res.json();
         setMessages(updatedMessages)
@@ -112,12 +117,18 @@ function Chatroom() {
 
   const handleDeleteMessage = async ()=>{
     toast("Updating Message....");
-    const response = await fetch(`/api/message/delete/${message.id}`, {
-      method: "DELETE"
+    const response = await fetch(`${baseBackendUrl}/api/message/delete/${message.id}`, {
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include"
     })
 
     if (response.ok) {
-      const res = await fetch("/api/message/all");
+      const res = await fetch(`${baseBackendUrl}/api/message/all`,
+        { credentials: "include" }
+      );
       if (res.ok) {
         const updatedMessages = await res.json();
         setMessages(updatedMessages)
