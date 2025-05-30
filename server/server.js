@@ -18,7 +18,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 app.use(cors({
-    origin: process.env.NODE_ENV === "production" ? "https://autistic-club-8ano.onrender.com" : "http://localhost:5173",
+    origin: process.env.NODE_ENV === "production" ? "https://autistic-club.vercel.app" : "http://localhost:5173",
     credentials: true
 }))
 
