@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, NavLink, useActionData } from "react-router";
 import ErrorsComponent from "../ErrorsComponent";
 
@@ -17,6 +17,11 @@ function Signup() {
       [e.target.name]: e.target.value,
     }));
   };
+  const [disableButton, setDisableButton] = useState(false)
+
+  useEffect(()=>{
+    setDisableButton(result !== null)
+  },[result])
 
   const result = useActionData();
   
@@ -104,6 +109,7 @@ function Signup() {
             <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            disabled={disableButton}
             >
             Sign Up
             </button>
