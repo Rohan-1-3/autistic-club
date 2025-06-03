@@ -4,7 +4,7 @@ A full-stack web application designed to provide a safe and inclusive space for 
 
 > ⚠️ **Note:** This is a personal learning project built to practice and understand full-stack development, authentication, and session handling. It is **not production-ready**.
 
-## PREVIEW: [Preview Site](https://autistic-club-8ano.onrender.com/)
+## PREVIEW: [Preview Site](https://autistic-club.vercel.app)
 
 ## 🔧 Tech Stack
 
