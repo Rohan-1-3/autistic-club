@@ -17,9 +17,6 @@ function Login() {
 
   const [disableButton, setDisableButton] = useState(false)
 
-  useEffect(()=>{
-    setDisableButton(result !== null)
-  },[result])
   const result = useActionData();
 
   return (
