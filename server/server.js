@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
-import { pool } from "./db/pool.js";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import { PrismaClient } from "@prisma/client";
 import prisma from "./db/prismaClient.js";
 import passport from "./configs/passportConfig.js"
 import { authRouter } from "./routes/authRouter.js";
@@ -11,8 +11,6 @@ import { messageRouter } from "./routes/messageRouter.js";
 
 dotenv.config();
 const port = process.env.PORT;
-
-const pgSession = connectPgSimple(session);
 
 const app = express();
 
@@ -24,11 +22,14 @@ app.use(cors({
 }))
 
 app.use(session({
-    store: new pgSession({
-        pool: pool,
-        tableName: "user_sessions",
-        createTableIfMissing: true
-    }),
+    store: new PrismaSessionStore(
+        prisma,
+        {
+            checkPeriod: 2 * 60 * 1000,  // ms
+            dbRecordIdIsSessionId: true,
+            dbRecordIdFunction: undefined,
+        }
+    ),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
