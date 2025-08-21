@@ -1,13 +1,13 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { pool } from "../db/pool.js";
+import { getUserByUsername, getUser } from "../db/queries.js";
 import { compare } from "bcryptjs";
 
 passport.use(
     new LocalStrategy(async (username, password, done)=>{
         try{
-            const { rows } = await pool.query("SELECT * FROM auth_users WHERE username = $1",[username])
-            const user = rows[0];
+            const response = await getUserByUsername(username);
+            const user = response.data;
             
             if(!user){
                 return done(null, false, {msg: "Incorrect Username"});
@@ -31,8 +31,8 @@ passport.serializeUser((user, done)=>{
 
 passport.deserializeUser(async (id, done)=>{
     try{
-        const { rows } = await pool.query("SELECT * FROM auth_users WHERE id = $1",[id])
-        const user = rows[0];
+        const response = await getUser(id);
+        const user = response.data;
         done(null, user);
     }catch(err){
         done(err);

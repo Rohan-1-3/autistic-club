@@ -56,8 +56,8 @@ const loginUser = [
                     user: {
                         id: user.id,
                         username: user.username,
-                        isMember: user.isMember,
-                        isAdmin: user.isAdmin
+                        isMember: user.ismember,
+                        isAdmin: user.isadmin
                     }
                 });
             });

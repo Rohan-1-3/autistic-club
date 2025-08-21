@@ -1,14 +1,21 @@
-import { pool } from "./pool.js"
+import prisma from "./prismaClient.js"
 import { v4 as uuid} from "uuid"
 
 const addAUser = async (user)=>{
     const userId = uuid()
     const { firstname, lastname, username, password, isMember, isAdmin } = user;
     try{
-        await pool.query(`
-            INSERT INTO auth_users ( id, firstname, lastname, username, password, isMember, isAdmin)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            `, [userId, firstname, lastname, username, password, isMember, isAdmin]);
+        await prisma.user.create({
+            data: {
+                id: userId,
+                firstname,
+                lastname,
+                username,
+                password,
+                ismember: isMember,
+                isadmin: isAdmin
+            }
+        });
         return {
             success: true,
             data: userId
@@ -23,10 +30,29 @@ const addAUser = async (user)=>{
 
 const getUser = async(userId)=>{
     try{
-        const { rows } = await pool.query(`SELECT * FROM auth_users WHERE id = $1`,[userId])
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
         return {
             success: true,
-            data: rows[0]
+            data: user
+        };
+    }catch(err){
+        return {
+            success: false,
+            error: err
+        }
+    }
+}
+
+const getUserByUsername = async(username)=>{
+    try{
+        const user = await prisma.user.findUnique({
+            where: { username }
+        });
+        return {
+            success: true,
+            data: user
         };
     }catch(err){
         return {
@@ -39,15 +65,20 @@ const getUser = async(userId)=>{
 const updateUser = async(updatedUser)=>{
     const { id, firstname, lastname, username, password, ismember, isadmin } = updatedUser;
     try{
-        await pool.query(`
-            UPDATE auth_users
-            SET firstname = $1, lastname = $2, username = $3,
-                password = $4, ismember = $5, isadmin = $6
-            WHERE id = $7
-            `,[firstname, lastname, username, password, ismember, isadmin, id])
-            return {
-                success: true
+        await prisma.user.update({
+            where: { id },
+            data: {
+                firstname,
+                lastname,
+                username,
+                password,
+                ismember,
+                isadmin
             }
+        });
+        return {
+            success: true
+        }
     }catch(err){
         return {
             success: false,
@@ -58,7 +89,9 @@ const updateUser = async(updatedUser)=>{
 
 const deleteUser = async(userId)=>{
     try{
-        await pool.query(`DELETE FROM auth_users WHERE id = $1`, [userId]);
+        await prisma.user.delete({
+            where: { id: userId }
+        });
         return { success: true }
     }catch(err){
         return {
@@ -71,12 +104,16 @@ const deleteUser = async(userId)=>{
 const addAMessage = async(userId, message)=>{
     const messageId = uuid();
     try{
-        const result = await pool.query(`INSERT INTO messages (userId, id, message)
-                          VALUES ($1, $2, $3)
-                          RETURNING *`,[userId, messageId, message])
+        const result = await prisma.message.create({
+            data: {
+                id: messageId,
+                userid: userId,
+                message
+            }
+        });
         return { 
             success: true,
-            data: result.rows[0]
+            data: result
          }
     }catch(err){
         return {
@@ -88,10 +125,12 @@ const addAMessage = async(userId, message)=>{
 
 const getAMessage = async(messageId)=>{
     try{
-        const { rows } = await pool.query("SELECT * FROM messages WHERE id = $1",[messageId]);
+        const message = await prisma.message.findUnique({
+            where: { id: messageId }
+        });
         return {
             success: true,
-            data: rows[0]
+            data: message
         };
     }catch(err){
         return {
@@ -103,14 +142,31 @@ const getAMessage = async(messageId)=>{
 
 const getAllMessages = async()=>{
     try{
-        const { rows } = await pool.query(`
-            SELECT m.id as id, username, date, message, isEdited FROM messages m
-            JOIN auth_users au ON au.id = m.userId
-            ORDER BY date
-            `)
+        const messages = await prisma.message.findMany({
+            include: {
+                auth_users: {
+                    select: {
+                        username: true
+                    }
+                }
+            },
+            orderBy: {
+                date: 'asc'
+            }
+        });
+        
+        // Transform the data to match the original format
+        const transformedMessages = messages.map(msg => ({
+            id: msg.id,
+            username: msg.auth_users?.username,
+            date: msg.date,
+            message: msg.message,
+            isedited: msg.isedited
+        }));
+        
         return {
             success: true,
-            data: rows
+            data: transformedMessages
         };
     }catch(err){
         return {
@@ -122,10 +178,12 @@ const getAllMessages = async()=>{
 
 const getMessagesByUser = async(userId)=>{
     try{
-        const { rows } = await pool.query(`SELECT * FROM messages WHERE userId = $1`,[userId])
+        const messages = await prisma.message.findMany({
+            where: { userid: userId }
+        });
         return {
             success: true,
-            data: rows[0]
+            data: messages
         };
     }catch(err){
         return {
@@ -138,11 +196,13 @@ const getMessagesByUser = async(userId)=>{
 const updateMessage = async(messageId, updatedMessageDetail)=>{
     const { message } = updatedMessageDetail;
     try{
-        await pool.query(`
-            UPDATE messages 
-            SET message = $1, isEdited = $2
-            WHERE id = $3
-            `,[message, true, messageId])
+        await prisma.message.update({
+            where: { id: messageId },
+            data: {
+                message,
+                isedited: true
+            }
+        });
         return { success: true }
     }catch(err){
         return {
@@ -154,7 +214,9 @@ const updateMessage = async(messageId, updatedMessageDetail)=>{
 
 const deleteMessage = async(messageId)=>{
     try{
-        await pool.query("DELETE FROM messages WHERE id = $1",[messageId])
+        await prisma.message.delete({
+            where: { id: messageId }
+        });
         return { success: true }
     }catch(err){
         return {
@@ -164,6 +226,6 @@ const deleteMessage = async(messageId)=>{
     }
 }
 
-export { addAUser, getUser, updateUser, deleteUser,
+export { addAUser, getUser, getUserByUsername, updateUser, deleteUser,
          addAMessage, getAMessage, updateMessage, deleteMessage,
          getAllMessages, getMessagesByUser };

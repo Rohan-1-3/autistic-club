@@ -26,7 +26,7 @@ const getAllMessagesByUser = expressAsyncHandler(async(req, res)=>{
         return res.status(400).json({err: response.error})
     }
     const messages = response.data;
-    if(messages){
+    if(messages && messages.length > 0){
         return res.status(200).json({messages: messages})
     }
     return res.status(200).json({ messages: [] });
