@@ -4,6 +4,7 @@ import cors from "cors";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db/pool.js";
+import prisma from "./db/prismaClient.js";
 import passport from "./configs/passportConfig.js"
 import { authRouter } from "./routes/authRouter.js";
 import { messageRouter } from "./routes/messageRouter.js";
@@ -52,4 +53,17 @@ app.use((err, req, res, next) => {
 
 app.listen(port, ()=>{
     console.log(`Server listening on port: ${port}`);
-})
+});
+
+// Graceful shutdown for Prisma
+process.on('SIGINT', async () => {
+    console.log('Received SIGINT. Graceful shutdown...');
+    await prisma.$disconnect();
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('Received SIGTERM. Graceful shutdown...');
+    await prisma.$disconnect();
+    process.exit(0);
+});
